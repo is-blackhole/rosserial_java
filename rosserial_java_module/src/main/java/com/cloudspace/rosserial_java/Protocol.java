@@ -61,6 +61,7 @@ import std_msgs.Time;
  * @author Adam Stambler
  */
 public class Protocol {
+    static final String TAG = "Protocol";
 
     // SPECIAL IDS
     // All IDS greater than 100 are Publishers/Subscribers
@@ -68,8 +69,8 @@ public class Protocol {
     static final int TOPIC_SUBSCRIBERS = 1;
     static final int TOPIC_TIME = 10;
 
-    public static final byte[] NEGOTIATE_TOPICS_REQUEST = {
-            (byte) 0xff, (byte) 0xfd, (byte) 0x00, (byte) 0x00, (byte) 0xff, (byte) 0x00, (byte) 0x00, (byte) 0xff};
+    public static final byte[] NEGOTIATE_TOPICS_REQUEST = {};
+
 
     private static final String SERIAL_TAG = "ROS Serial";
 
@@ -200,7 +201,7 @@ public class Protocol {
                 if (pub == null) {
                     pub = node.newPublisher(name, type);
                     publishers.put(id, pub);
-                    android.util.Log.d("ADDING TOPIC", "Adding " + (is_publisher ? " publisher " : " subscriber ") + name + " of type " + type + " with id " + id);
+                    android.util.Log.i(TAG, "Adding " + (is_publisher ? " publisher " : " subscriber ") + name + " of type " + type + " with id " + id);
                     if (newPubListener != null)
                         newPubListener.onNewTopic(topic);
                 }
@@ -210,7 +211,7 @@ public class Protocol {
                     sub = node.newSubscriber(name, type);
                     sub.addMessageListener(new MessageListenerForwarding(id, this));
                     subscribers.put(id, sub);
-                    android.util.Log.d("ADDING TOPIC", "Adding " + (is_publisher ? " publisher " : " subscriber ") + name + " of type " + type + " with id " + id);
+                    android.util.Log.i(TAG, "Adding " + (is_publisher ? " publisher " : " subscriber ") + name + " of type " + type + " with id " + id);
                     if (newSubListener != null)
                         newSubListener.onNewTopic(topic);
                 }
@@ -283,7 +284,7 @@ public class Protocol {
         switch (topic_id) {
             case TopicInfo.ID_PUBLISHER:
             case TopicInfo.ID_SUBSCRIBER:
-                android.util.Log.d("SUB BYTE " + topic_id, BinaryUtils.byteArrayToHexString(buffer));
+                android.util.Log.d(TAG, "SUB BYTE " + topic_id + ": " + BinaryUtils.byteArrayToHexString(buffer));
 
                 ChannelBuffer channelBuffer = ChannelBuffers.dynamicBuffer(ByteOrder.LITTLE_ENDIAN, 458881);
                 channelBuffer.setBytes(0, buffer);
@@ -410,7 +411,7 @@ public class Protocol {
 
         @Override
         public void onNewMessage(MessageType t) {
-            android.util.Log.d("Forwarding Message", t.toString());
+            android.util.Log.d(TAG, "Forward Message: " + t.toString());
             protocol.packetHandler.send(protocol.constructMessage((Message) t), id);
         }
     }

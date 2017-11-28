@@ -45,6 +45,10 @@ public class BinaryUtils {
 	public static final char[] DIGIT_TO_CHAR = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 			'A', 'B', 'C', 'D', 'E', 'F' };
 
+	public static String byteArrayToHexString(byte[] in) {
+		return byteArrayToHexString(in, 0);
+	}
+
 	/**
 	 * Converts a Byte array into a string representation.
 	 * 
@@ -54,7 +58,7 @@ public class BinaryUtils {
 	 * @param in
 	 * @return
 	 */
-	public static String byteArrayToHexString(byte[] in) {
+	public static String byteArrayToHexString(byte[] in, int max) {
 		byte ch = 0x00;
 
 		int i = 0;
@@ -65,7 +69,8 @@ public class BinaryUtils {
 
 		StringBuilder out = new StringBuilder(in.length * 5);
 
-		while (i < in.length) {
+		int mm = (max > 0) ? max : in.length;
+		while (i < mm) {
 			out.append("0x");
 			ch = (byte) ((in[i] >>> 4) & 0x0F); // Strip off high nibble
 
@@ -84,6 +89,6 @@ public class BinaryUtils {
 	}
 
     public static String byteToHexString(byte b) {
-        return byteArrayToHexString(new byte[]{b});
+        return byteArrayToHexString(new byte[]{b}, 0);
     }
 }
